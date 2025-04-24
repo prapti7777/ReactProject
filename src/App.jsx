@@ -20,6 +20,7 @@ import ChefDashboard from '@/pages/ChefDashboard';
 import RecipeForm from '@/pages/Chef/RecipeForm';
 import ChefProfileForm from '@/pages/ChefProfileForm';
 import Register from '@/pages/Register';
+import ChefLogout from '@/pages/ChefLogout';
 
 const App = () => {
   return (
@@ -36,6 +37,7 @@ const App = () => {
           <Route path="add-recipe" element={<RecipeForm />} />
           <Route path="chef-dashboard/profile" element={<ChefProfileForm />} />
           <Route path="register" element={<Register/>} />
+          <Route path="cheflogout" element={<ChefLogout/>} />
         </Route>
       </Routes>
     </Router>

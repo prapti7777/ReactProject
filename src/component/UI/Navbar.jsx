@@ -19,8 +19,8 @@ const Navbar = () => {
   ];
 
   return (
-    <header className="fixed top-0 left-0 w-full bg-white shadow-md z-50">
-      <nav className="flex items-center justify-between px-6 lg:px-20 py-4 relative">
+    <header className="fixed top-0 left-0 w-full bg-white shadow-md z-50 h-20">
+      <nav className="flex items-center justify-between px-6 lg:px-20 py-4 relative h-full">
         {/* Logo */}
         <Link to="/" className="text-2xl font-bold text-green-600">
           RecipeNest
@@ -59,7 +59,7 @@ const Navbar = () => {
           {isOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
 
-        {/* Mobile Menu with Animation */}
+        {/* Mobile Menu */}
         <AnimatePresence>
           {isOpen && (
             <motion.div
@@ -81,7 +81,6 @@ const Navbar = () => {
                   {label}
                 </Link>
               ))}
-
               <Link
                 to="/login"
                 onClick={closeMenu}

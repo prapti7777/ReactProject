@@ -1,21 +1,31 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import Navbar from '@/component/UI/Navbar';
-import Container from '@/component/UI/Container';
-import Footer from '@/component/UI/Footer';  // ← Import the new Footer
+import Footer from '@/component/UI/Footer';
 
 const MainLayouts = () => {
+  const { pathname } = useLocation();
+
+  // Pages where we hide both navbar and footer
+  const hideOn = [
+    '/login',
+    '/register',
+  ];
+  const isChefDashboard = pathname.startsWith('/chef-dashboard');
+
+  const showHeaderFooter = 
+    !hideOn.includes(pathname) &&
+    !isChefDashboard;
+
   return (
     <>
-      <Navbar />
+      {showHeaderFooter && <Navbar />}
 
-      <main className="pt-24 pb-10 min-h-screen bg-gray-50">
-        <Container>
-          <Outlet />
-        </Container>
+      <main className={`min-h-[calc(100vh-4rem)] ${showHeaderFooter ? 'pt-20' : ''}`}>
+        <Outlet />
       </main>
 
-      <Footer />  {/* ← Render Footer here */}
+      {showHeaderFooter && <Footer />}
     </>
   );
 };
