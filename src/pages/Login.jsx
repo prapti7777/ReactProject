@@ -1,23 +1,23 @@
 // src/pages/Login.jsx
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // ✅ Step 1: Import
-
+import { useNavigate } from "react-router-dom";
 import Input from "@/component/UI/Input";
 import Button from "@/component/UI/Button";
 import Card from "@/component/UI/Card";
+import axios from "axios";
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
+  const [generalError, setGeneralError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const navigate = useNavigate(); // ✅ Step 2: Initialize navigate
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+    setErrors((prev) => ({ ...prev, [id]: "" }));
+    setGeneralError("");
   };
 
   const validate = () => {
@@ -29,85 +29,106 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const validationErrors = validate();
-    if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
+    const fieldErrors = validate();
+    if (Object.keys(fieldErrors).length) {
+      setErrors(fieldErrors);
       return;
     }
 
-    setErrors({});
     setIsSubmitting(true);
-
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/Auth/login`,
+        formData
+      );
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Login failed");
+      // Save token and user info if needed
+      if (response.status === 200 && response.data.token) {
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("chefId", response.data.user.id); // Save user id as chefId
+        navigate("/chef-dashboard");
+      } else {
+        setGeneralError("Invalid email or password.");
       }
-
-      // ✅ Save token and redirect
-      localStorage.setItem("token", data.token);
-      alert("Login successful!");
-      navigate("/chef-dashboard"); // ✅ Redirect after success
-
-    } catch (error) {
-      alert(error.message);
+    } catch (err) {
+      console.error("Login error:", err);
+      setGeneralError(
+        err.response?.data?.message || "Login failed. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center mb-6">Chef Login</h2>
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <Input
-            label="Email"
-            id="email"
-            type="email"
-            placeholder="chef@recipenest.com"
-            value={formData.email}
-            onChange={handleChange}
-            error={errors.email}
-          />
-          <Input
-            label="Password"
-            id="password"
-            type="password"
-            placeholder="••••••••"
-            value={formData.password}
-            onChange={handleChange}
-            error={errors.password}
-          />
-          <Button
-            variant="primary"
-            className="w-full"
-            type="submit"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Signing In..." : "Sign In"}
-          </Button>
-        </form>
-        <p className="text-center text-sm text-gray-600 mt-4">
-  New User?{" "}
-  <span
-    className="italic text-green-600 cursor-pointer hover:underline"
-    onClick={() => navigate("/register")}
-  >
-    Register as chef
-  </span>
-</p>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-white px-4 sm:px-6 py-20">
+      <div className="w-full max-w-md">
+        <Card className="p-10 rounded-2xl shadow-lg border border-gray-200 bg-white">
+          <h2 className="text-2xl sm:text-3xl font-semibold text-center text-green-700 mb-2">
+            Chef Login
+          </h2>
+          <p className="text-center text-gray-500 mb-8 text-sm">
+            Sign in to manage your recipes and profile.
+          </p>
 
-      </Card>
+          {generalError && (
+            <div className="mb-4 text-sm text-red-600 text-center">
+              {generalError}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <Input
+              label="Email"
+              id="email"
+              type="email"
+              placeholder="chef@recipenest.com"
+              value={formData.email}
+              onChange={handleChange}
+              error={errors.email}
+              required
+            />
+            <Input
+              label="Password"
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              value={formData.password}
+              onChange={handleChange}
+              error={errors.password}
+              required
+            />
+
+            <div className="flex justify-between items-center text-sm">
+              <span
+                className="text-green-600 cursor-pointer hover:underline"
+                onClick={() => navigate("/forgot-password")}
+              >
+                Forgot Password?
+              </span>
+            </div>
+
+            <Button
+              type="submit"
+              variant="primary"
+              className="w-full mt-4"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Signing In..." : "Sign In"}
+            </Button>
+          </form>
+
+          <p className="text-center text-sm text-gray-600 mt-6">
+            New User?{" "}
+            <span
+              className="italic text-green-600 cursor-pointer hover:underline"
+              onClick={() => navigate("/register")}
+            >
+              Register as chef
+            </span>
+          </p>
+        </Card>
+      </div>
     </div>
   );
 };
