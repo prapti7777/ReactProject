@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "@/component/UI/Input";
 import Button from "@/component/UI/Button";
-import Card from "@/component/UI/Card";
 import axios from "axios";
 
 const Login = () => {
@@ -41,11 +40,9 @@ const Login = () => {
         `${import.meta.env.VITE_API_URL}/api/Auth/login`,
         formData
       );
-
-      // Save token and user info if needed
       if (response.status === 200 && response.data.token) {
         localStorage.setItem("token", response.data.token);
-        localStorage.setItem("chefId", response.data.user.id); // Save user id as chefId
+        localStorage.setItem("chefId", response.data.user.id);
         navigate("/chef-dashboard");
       } else {
         setGeneralError("Invalid email or password.");
@@ -62,9 +59,19 @@ const Login = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-white px-4 sm:px-6 py-20">
-      <div className="w-full max-w-md">
-        <Card className="p-10 rounded-2xl shadow-lg border border-gray-200 bg-white">
-          <h2 className="text-2xl sm:text-3xl font-semibold text-center text-green-700 mb-2">
+      <div className="flex w-full max-w-4xl bg-white rounded-2xl shadow-lg overflow-hidden">
+        {/* Left: Image */}
+        <div className="hidden lg:block lg:w-1/2">
+          <img
+            src="/Images/cheflogin.jpeg"
+            alt="Chef cooking"
+            className="object-cover w-full h-full"
+          />
+        </div>
+
+        {/* Right: Form */}
+        <div className="w-full lg:w-1/2 p-10">
+          <h2 className="text-2xl sm:text-3xl font-semibold text-green-700 mb-2 text-center">
             Chef Login
           </h2>
           <p className="text-center text-gray-500 mb-8 text-sm">
@@ -127,7 +134,7 @@ const Login = () => {
               Register as chef
             </span>
           </p>
-        </Card>
+        </div>
       </div>
     </div>
   );
