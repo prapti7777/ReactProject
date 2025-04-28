@@ -1,3 +1,4 @@
+// src/pages/ManageRecipes.jsx
 import React, { useState, useEffect } from "react";
 import Input from "@/component/UI/Input";
 import Button from "@/component/UI/Button";
@@ -33,7 +34,7 @@ const ManageRecipes = () => {
 
   const handleChange = (e) => {
     const { id, value } = e.target;
-    setFormData((prev) => ({ ...prev, [id]: value }));
+    setFormData(prev => ({ ...prev, [id]: value }));
   };
 
   const handleImageChange = (e) => {
@@ -45,15 +46,20 @@ const ManageRecipes = () => {
     reader.readAsDataURL(file);
   };
 
+  const resetForm = () => {
+    setFormData({ title: "", description: "" });
+    setImageFile(null);
+    setImagePreview(null);
+    setEditingId(null);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const { title, description } = formData;
-
     if (!title || !description || (!imageFile && !editingId)) {
       alert("All fields are required!");
       return;
     }
-
     setIsSubmitting(true);
     try {
       const fd = new FormData();
@@ -66,7 +72,6 @@ const ManageRecipes = () => {
       } else {
         await createRecipe(fd);
       }
-
       resetForm();
       fetchRecipes();
     } catch (err) {
@@ -75,13 +80,6 @@ const ManageRecipes = () => {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const resetForm = () => {
-    setFormData({ title: "", description: "" });
-    setImageFile(null);
-    setImagePreview(null);
-    setEditingId(null);
   };
 
   const handleEdit = (r) => {
@@ -103,22 +101,21 @@ const ManageRecipes = () => {
 
   const sortRecipes = (list) => {
     switch (sortBy) {
-      case "title-asc":
-        return [...list].sort((a, b) => a.title.localeCompare(b.title));
-      case "title-desc":
-        return [...list].sort((a, b) => b.title.localeCompare(a.title));
-      case "oldest":
-        return [...list].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+      case "title-asc":  return [...list].sort((a,b)=>a.title.localeCompare(b.title));
+      case "title-desc": return [...list].sort((a,b)=>b.title.localeCompare(a.title));
+      case "oldest":     return [...list].sort((a,b)=>new Date(a.createdAt) - new Date(b.createdAt));
       case "newest":
-      default:
-        return [...list].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      default:           return [...list].sort((a,b)=>new Date(b.createdAt) - new Date(a.createdAt));
     }
   };
 
   return (
     <div className="space-y-8">
+      {/* Form */}
       <Card className="p-6">
-        <h2 className="text-xl font-bold mb-4">{editingId ? "Edit Recipe" : "Add New Recipe"}</h2>
+        <h2 className="text-xl font-bold mb-4">
+          {editingId ? "Edit Recipe" : "Add New Recipe"}
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             id="title"
@@ -128,7 +125,6 @@ const ManageRecipes = () => {
             onChange={handleChange}
             required
           />
-
           <div>
             <label className="block font-medium mb-1">Description</label>
             <textarea
@@ -140,7 +136,6 @@ const ManageRecipes = () => {
               required
             />
           </div>
-
           <div>
             <label className="block font-medium mb-1">Image</label>
             <input
@@ -152,27 +147,32 @@ const ManageRecipes = () => {
             />
             {imagePreview && (
               <div className="mt-2">
-                <img src={imagePreview} alt="Preview" className="w-full h-40 object-cover rounded" />
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-full h-40 object-cover rounded"
+                />
               </div>
             )}
           </div>
-
           <Button
             type="submit"
             variant="primary"
             className="w-full"
             disabled={isSubmitting}
           >
-            {isSubmitting ? (editingId ? "Updating…" : "Adding…") : (editingId ? "Update Recipe" : "Add Recipe")}
+            {isSubmitting
+              ? (editingId ? "Updating…" : "Adding…")
+              : (editingId ? "Update Recipe" : "Add Recipe")}
           </Button>
         </form>
       </Card>
 
-      {/* Sorting and Listing */}
+      {/* Sort Control */}
       <div className="flex justify-end">
         <select
           value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
+          onChange={e => setSortBy(e.target.value)}
           className="border px-3 py-2 rounded-md"
         >
           <option value="newest">Newest First</option>
@@ -182,24 +182,37 @@ const ManageRecipes = () => {
         </select>
       </div>
 
+      {/* Recipe List */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {recipes.length === 0 ? (
-          <p className="text-center text-gray-500 col-span-full">No recipes found. Add your first recipe!</p>
+          <p className="text-center text-gray-500 col-span-full">
+            No recipes found. Add your first recipe!
+          </p>
         ) : (
-          sortRecipes(recipes).map((r) => (
+          sortRecipes(recipes).map(r => (
             <Card key={r.id} className="p-4 space-y-3">
               <h3 className="text-lg font-semibold">{r.title}</h3>
               <p className="text-gray-600">{r.description}</p>
               {r.imageUrl && (
-                <img src={r.imageUrl} alt={r.title} className="w-full h-40 object-cover rounded" />
+                <img
+                  src={r.imageUrl}
+                  alt={r.title}
+                  className="w-full h-40 object-cover rounded"
+                />
               )}
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-500">
                   {new Date(r.createdAt).toLocaleDateString()}
                 </span>
                 <div className="flex gap-2">
-                  <Button size="sm" onClick={() => handleEdit(r)}>Edit</Button>
-                  <Button size="sm" variant="destructive" onClick={() => handleDelete(r.id)}>
+                  <Button size="sm" onClick={() => handleEdit(r)}>
+                    Edit
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => handleDelete(r.id)}
+                  >
                     Delete
                   </Button>
                 </div>
