@@ -34,7 +34,7 @@ const ManageRecipes = () => {
 
   const handleChange = (e) => {
     const { id, value } = e.target;
-    setFormData(prev => ({ ...prev, [id]: value }));
+    setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
   const handleImageChange = (e) => {
@@ -72,6 +72,7 @@ const ManageRecipes = () => {
       } else {
         await createRecipe(fd);
       }
+
       resetForm();
       fetchRecipes();
     } catch (err) {
@@ -101,17 +102,20 @@ const ManageRecipes = () => {
 
   const sortRecipes = (list) => {
     switch (sortBy) {
-      case "title-asc":  return [...list].sort((a,b)=>a.title.localeCompare(b.title));
-      case "title-desc": return [...list].sort((a,b)=>b.title.localeCompare(a.title));
-      case "oldest":     return [...list].sort((a,b)=>new Date(a.createdAt) - new Date(b.createdAt));
+      case "title-asc":
+        return [...list].sort((a, b) => a.title.localeCompare(b.title));
+      case "title-desc":
+        return [...list].sort((a, b) => b.title.localeCompare(a.title));
+      case "oldest":
+        return [...list].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
       case "newest":
-      default:           return [...list].sort((a,b)=>new Date(b.createdAt) - new Date(a.createdAt));
+      default:
+        return [...list].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     }
   };
 
   return (
     <div className="space-y-8">
-      {/* Form */}
       <Card className="p-6">
         <h2 className="text-xl font-bold mb-4">
           {editingId ? "Edit Recipe" : "Add New Recipe"}
@@ -162,17 +166,20 @@ const ManageRecipes = () => {
             disabled={isSubmitting}
           >
             {isSubmitting
-              ? (editingId ? "Updating…" : "Adding…")
-              : (editingId ? "Update Recipe" : "Add Recipe")}
+              ? editingId
+                ? "Updating…"
+                : "Adding…"
+              : editingId
+              ? "Update Recipe"
+              : "Add Recipe"}
           </Button>
         </form>
       </Card>
 
-      {/* Sort Control */}
       <div className="flex justify-end">
         <select
           value={sortBy}
-          onChange={e => setSortBy(e.target.value)}
+          onChange={(e) => setSortBy(e.target.value)}
           className="border px-3 py-2 rounded-md"
         >
           <option value="newest">Newest First</option>
@@ -182,14 +189,13 @@ const ManageRecipes = () => {
         </select>
       </div>
 
-      {/* Recipe List */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {recipes.length === 0 ? (
           <p className="text-center text-gray-500 col-span-full">
             No recipes found. Add your first recipe!
           </p>
         ) : (
-          sortRecipes(recipes).map(r => (
+          sortRecipes(recipes).map((r) => (
             <Card key={r.id} className="p-4 space-y-3">
               <h3 className="text-lg font-semibold">{r.title}</h3>
               <p className="text-gray-600">{r.description}</p>
@@ -208,11 +214,7 @@ const ManageRecipes = () => {
                   <Button size="sm" onClick={() => handleEdit(r)}>
                     Edit
                   </Button>
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => handleDelete(r.id)}
-                  >
+                  <Button size="sm" variant="destructive" onClick={() => handleDelete(r.id)}>
                     Delete
                   </Button>
                 </div>
