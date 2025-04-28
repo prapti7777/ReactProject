@@ -21,6 +21,7 @@ import RecipeForm from '@/pages/Chef/RecipeForm';
 import ChefProfileForm from '@/pages/ChefProfileForm';
 import Register from '@/pages/Register';
 import ChefLogout from '@/pages/ChefLogout';
+import ForgotPassword from './pages/ForgotPassword';
 
 const App = () => {
   return (
@@ -38,6 +39,7 @@ const App = () => {
           <Route path="chef-dashboard/profile" element={<ChefProfileForm />} />
           <Route path="register" element={<Register/>} />
           <Route path="cheflogout" element={<ChefLogout/>} />
+          <Route path="forgot-password" element={<ForgotPassword/>} />
         </Route>
       </Routes>
     </Router>
